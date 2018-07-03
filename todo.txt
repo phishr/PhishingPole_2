@@ -1,0 +1,38 @@
+
+
+clean inputs but it turns out that django already does anti-xss
+	pages that need to be cleaned and where info needs to be verified:
+		add targets
+		register
+		update info
+		sign in
+
+
+make sure it says the same thing on each page lol
+maybe add tool info so I can shrink the titles
+make everything more pretty in general
+
+
+
+reset password from email
+
+finish trial system
+
+
+make the john doe page into a sample dashboard
+
+
+
+Admin Panel:
+	Create Trial Users
+	Create Users
+	Convert Trial Users To Normal Users
+
+Trial Users
+
+
+
+what do I need to do to start doing beta testing:
+	edit PHISHED.html
+	get rid of stuff that says material design lite and stuff
+	make sure new campaigns can be made from the web app

@@ -1,0 +1,74 @@
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'phishr/dashboard/styles.css' %}">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+<style>
+#main-section {
+    overflow: hidden;
+    align-items: center;
+    justify-content: center
+}
+
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 50%;
+    opacity: 0.48;
+}</style>
+
+<div id='particles-js'></div>
+
+<div class="mdl-layout">
+
+  <style>
+        .mdl-layout {
+        align-items: center;
+        justify-content: center;
+      }
+      .mdl-layout__content {
+        padding: 24px;
+        flex: none;
+      } 
+
+      .mdl-card {
+        width: 500px;
+        height: 220px;
+      }
+
+  </style>
+
+<main class="mdl-layout__content" id='main-section'>
+    <div class="mdl-card mdl-shadow--6dp">
+      <div class="mdl-card__title mdl-color--primary mdl-color-text--white">
+        <h2 class="mdl-card__title-text">Welcome To Phishr!</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+
+      	Phishr is an anti-phishing service and is currently in under development in the beta stages.
+      </br>
+      </br>
+      	If you are signed up, you can log in <a href="/login/">here</a>
+      </br>
+   	  </br>
+   	  If you would like to sign up for the beta you can do that <a href="/BetaSignup/">here</a>
+   	  </br>
+   	  </br>
+    </div>
+  </main>
+	</div>
+
+
+{% load static %}
+<link rel='stylesheet' href="{% static 'particles.js-master/style.css' %}"></link>
+<script type='text/javascript' src="{% static 'particles.js-master/particles.js' %}"></script>
+<script type='text/javascript' src="{% static 'particles.js-master/app.js' %}"></script>

@@ -1,0 +1,11 @@
+{'__module__': 'Phishr.models', 
+'__doc__': 'operation_test_1(id, name, company_id, clicked_link, employee_id)',
+ '_meta': <Options for operation_test_1>, 
+ 'DoesNotExist': <class 'Phishr.models.DoesNotExist'>, 
+ 'MultipleObjectsReturned': <class 'Phishr.models.MultipleObjectsReturned'>, 
+ 'name': <django.db.models.query_utils.DeferredAttribute object at 0x041F74D0>,
+ 'company_id': <django.db.models.query_utils.DeferredAttribute object at 0x041F74B0>, 
+ 'clicked_link': <django.db.models.query_utils.DeferredAttribute object at 0x041F7410>, 
+ 'employee_id': <django.db.models.query_utils.DeferredAttribute object at 0x041F7470>, 
+ 'id': <django.db.models.query_utils.DeferredAttribute object at 0x041F7350>, 
+ 'objects': <django.db.models.manager.ManagerDescriptor object at 0x041F7370>}

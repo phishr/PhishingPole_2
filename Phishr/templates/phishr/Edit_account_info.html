@@ -1,0 +1,24 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+</br>
+<form action="/EditAccount/" method="post">
+{% csrf_token %}
+  <div class="container">
+    <label for="new_username"><b>Username</b></label>
+    <input type="text" value="{{ user.username }}"" name="new_username" readonly>
+  </br>
+      <label for="new_first_name"><b>First name</b></label>
+    <input type="text" value="{{ user.first_name }}" name="new_first_name" required>
+  </br>
+      <label for="new_last_name"><b>Last name</b></label>
+    <input type="text" value="{{ user.last_name }}" name="new_last_name" required>
+  </br>
+   <label for="new_email"><b>Personal Email</b></label>
+    <input type="text" value="{{ user.email }}" name="new_email" required>
+  </br>
+      <label for="new_company_name"><b>Company name</b></label>
+    <input type="text" value="{{ company_name }}" name="new_company_name" required>
+  </br>
+    <button type="submit">Update</button> <a href='ResetPassword'>reset password</a>
+  </div>
+  </br>
