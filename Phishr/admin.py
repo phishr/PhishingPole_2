@@ -4,6 +4,7 @@ from .models import target
 from .models import phishr_user
 from .models import campaign_directory
 from .models import campaign_results
+from .models import company
 '''
 from .models import operation_test_1
 from .models import operation_test_2
@@ -12,12 +13,9 @@ from .models import operation_test_4
 from .models import operation_test_5
 from .models import operation_test_6
 '''
-from .models import companyco_trial_campaign
-
 
 from django.apps import apps
-
-admin.site.register(companyco_trial_campaign)
+admin.site.register(company)
 admin.site.register(target)
 admin.site.register(phishr_user)
 admin.site.register(campaign_directory)

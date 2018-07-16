@@ -1,0 +1,54 @@
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'phishr/dashboard/styles.css' %}">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="https://js.chargebee.com/v2/chargebee.js" data-cb-site="phishr" ></script>
+
+    <title>Phishr</title>
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'phishr/dashboard/images/favicon.png' %}">
+
+<script type="text/javascript">
+  window.onload = function(){
+    document.getElementById('BillingButton').click();
+}
+</script>
+<div class="mdl-layout mdl-js-layout mdl-color--grey-100">
+  
+  <style>
+        .mdl-layout {
+        align-items: center;
+        justify-content: center;
+      }
+      .mdl-layout__content {
+        padding: 24px;
+        flex: none;
+      } 
+
+      .mdl-card {
+        width: 500px;
+        height: 150px;
+      }
+
+  </style>
+  <main class="mdl-layout__content">
+    <div class="mdl-card mdl-shadow--6dp">
+      <div class="mdl-card__title mdl-color--primary mdl-color-text--white">
+        <h2 class="mdl-card__title-text">Billing</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                    
+      </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <button id='BillingButton' class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="javascript:void(0)" data-cb-type="checkout" data-cb-plan-id="basic-plan" data-cb-plan-quantity="1">Go Back To Billing</button>
+      </br>
+      </div>
+    </div>
+  </main>
+</div>

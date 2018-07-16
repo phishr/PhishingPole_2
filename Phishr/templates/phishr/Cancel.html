@@ -44,11 +44,7 @@
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
       <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-          {% if individual == False %}
-          <span class="mdl-layout-title">Employee List</span>
-          {% else %}
-          <span class="mdl-layout-title">{{ TARGET.name }}</span>
-          {% endif %}
+          <span class="mdl-layout-title">Add Employee</span>
           <div class="mdl-layout-spacer"></div>
         </div>
       </header>
@@ -71,7 +67,6 @@
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
           <a class="mdl-navigation__link" href="/dashboard/"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
-
           <a class="mdl-navigation__link" href="/dashboard/individuals/"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">person</i>Individuals</a>
           <a class="mdl-navigation__link" href="/dashboard/UpdateAccount/"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">account_box</i>Account info</a>
           <a class="mdl-navigation__link" href="/dashboard/campaigns/"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">view_headline</i>Campaigns</a>
@@ -85,118 +80,51 @@
       <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid demo-content">
 
+          {% if confirmed == True %}
+          <h4> Your subscription to phishr will be canceled after the next phishing campaign. You will still have access to the phishr dashboard and be able to view information from previous campaigns, but you will not recieve any more phishing emails or information in the dashboard. </h4>
+          {% else %}
+          </br>
+          <form action="/dashboard/UpdateAccount/Cancel/" method="post">
 
-            {% if individual == False %}
-            <style>
-            .demo-list-icon {
-              width: 300px;
-            }
-            </style>
+          <h4>Are you sure you want to cancel your subscription to Phishr?</h4>
+          {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
+          {% csrf_token %}
+            <div class="container">
+            </br>
+                  <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-2">
+                  <input type="checkbox" id="checkbox-2" class="mdl-checkbox__input" onclick="enable()">
+                  <span class="mdl-checkbox__label">Yes, I'm sure.</span>
+                </label>
+              </br>
+              <div id="reason" style="display:none" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <textarea class="mdl-textfield__input" type="text" rows="4" name="reason" required></textarea>
+                  <label class="mdl-textfield__label" for="reason">Reason for cancellation</label>
+              </div>
+                  <input class="mdl-textfield__input" type="hidden" value="true" name="confirmation" required>
+            </br>
+             <button id='submit_button' class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" type="submit" style="display:none">
+              Cancel Subscription
+            </button>
 
-            <!-- <ul class="demo-list-icon mdl-list"> -->
+            <script>
+              function enable() {
+                  var checkBox = document.getElementById("checkbox-2");
+                  var text = document.getElementById("submit_button");
+                  var reason = document.getElementById("reason")
+                  if (checkBox.checked == true){
+                      text.style.display = "block";
+                      reason.style.display = "block";
+                  } else {
+                     text.style.display = "none";
+                     reason.style.display = "none";
+                  }
+              }
+              </script>
 
-              <table style="width: 100%" class="mdl-data-table mdl-shadow--2dp">
-              <thead>
-              <tr>
-              <th style="text-align:left"> Employee Name </th>
-              <th style="text-align:left">Email</th>
-              <th style="text-align:left">Phone Number</th>
-              </tr>
-              </thead>
-              <tbody>
-            
-            {% for employee in employees %}
-
-              <tr onclick="location.href='/dashboard/individuals/{{ employee.name|cut:' ' }}/';">
-              <td style="text-align:left">{{ employee.name }}</td>
-              <td style="text-align:left">{{ employee.email }}</td>
-              <td style="text-align:left">{{ employee.phone_number }}</td>
-              </tr>
-
-            {% endfor %}
-              </tbody>
-              </table>
-            </ul>
-            
-            {% else %}
-                   
-                    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-                    
-                    <script>
-                        google.charts.load('current', {packages: ['corechart', 'line']});
-                        google.charts.setOnLoadCallback(drawLogScales);
-
-                        function drawLogScales() {
-                              var data = new google.visualization.DataTable();
-                              data.addColumn('number', 'Campaigns Since signup');
-                              var STRTOPRINT = "{{ TARGET.name }}'s click history";
-                              data.addColumn('number', STRTOPRINT);
-
-                              data.addRows([
-                                {{ formated_graph_data }}
-                              ]);
-
-                              var options = {
-                                hAxis: {
-                                  title: 'Campaigns since signup',
-                                  logScale: false
-                                },
-                                vAxis: {
-                                  title: 'Campaign Success',
-                                  logScale: false
-                                },
-                                colors: ['#a52714', '#097138']
-                              };
-
-                              var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                              chart.draw(data, options);
-                            }
-                    </script>
-
-                    <div id="chart_div" style="width: 900px; height: 500px;" ></div>
-                  </br>
-
-                                <style>
-            .demo-list-icon {
-              width: 300px;
-            }
-            </style>
-
-
-            <!-- <ul class="demo-list-icon mdl-list"> -->
-
-              <table style="width: 100%" class="mdl-data-table mdl-shadow--2dp">
-              <thead>
-              <tr>
-              <th style="text-align:left"> Campaign Name </th>
-              <th style="text-align:left">Clicked Phishing Link </th>
-              </tr>
-              </thead>
-              <tbody>
-            {% for C in campaigns %}
-
-              <tr onclick="location.href='/dashboard/campaigns/{{ C.campaign_name|cut:' ' }}/';">
-              <td style="text-align:left">{{ C.campaign_name }}</td>
-              
-              {% load dictionary_use %}
-
-              {% if clicks|get_item:C.campaign_name == True %}
-              <td style="text-align:left">Yes</td>
-              
-              {% else %}
-              <td style="text-align:left">No</td>
-              {% endif %}
-              
-              </tr>
-
-            {% endfor %}
-              </tbody>
-              </table>
-
-
+            </div>
+            </br>
             {% endif %}
-
         </div>
       </main>
     </div>

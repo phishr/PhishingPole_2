@@ -7,7 +7,6 @@
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <title>Phishr</title>
-
     {% load static %}
     <link rel="shortcut icon" href="{% static 'phishr/dashboard/images/favicon.png' %}">
     <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
@@ -93,7 +92,7 @@
                         function drawLogScales() {
                               var data = new google.visualization.DataTable();
                               data.addColumn('number', 'Campaigns since signup');
-                              data.addColumn('number', 'number of employees that clicked phising links');
+                              data.addColumn('number', 'number of employees that clicked phishing links');
 
                               data.addRows([
                                 {{ formated_graph_data }}
@@ -136,7 +135,7 @@
                         ]);
 
                         var options = {
-                          title: 'Vulerable Employees (from most recent phishing campaign)'
+                          title: 'Vulnerable Employees (from most recent phishing campaign)'
                         };
 
                         var chart = new google.visualization.PieChart(document.getElementById('piechart_now'));
@@ -166,7 +165,7 @@
                         ]);
 
                         var options = {
-                          title: 'Vulerable Employees (on average)'
+                          title: 'Vulnerable Employees (on average)'
                         };
 
                         var chart = new google.visualization.PieChart(document.getElementById('piechart_average'));

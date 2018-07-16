@@ -15,6 +15,10 @@
   </br>
 -->
 
+  <title>Phishr</title>
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'phishr/dashboard/images/favicon.png' %}">
+
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -58,7 +62,7 @@
           {% csrf_token %}
           <div class="mdl-textfield mdl-js-textfield">
             <input class="mdl-textfield__input" type="text" id="username" name="username"/ required>
-            <label class="mdl-textfield__label" for="username">Username</label>
+            <label class="mdl-textfield__label" for="username">Username or Email  </label>
           </div>
           <div class="mdl-textfield mdl-js-textfield">
             <input class="mdl-textfield__input" type="password" id="password" name="password"/ required>
@@ -68,7 +72,10 @@
       <div class="mdl-card__actions mdl-card--border">
         <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" type="submit">Log in</button>
       </br>
-       <a href="/BetaSignup/">Sign Up For Beta</a>
+       <a href="/Signup/">Sign Up</a> 
+     </br>
+   </br>
+       <a href="/ForgotPassword/">Forgot Password?</a>
       </div>
       </form>
 

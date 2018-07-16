@@ -6,8 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Material Design Lite</title>
-
+    <title>Phishr</title>
     {% load static %}
     <link rel="shortcut icon" href="{% static 'phishr/dashboard/images/favicon.png' %}">
     <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
@@ -81,7 +80,7 @@
       <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid demo-content">
 
-
+          <h4>If you have too many employees to add one by one or would like us to add your employees for you, we can take care of it for free! Just email support@phishr.io with your request. Make sure to include the full name and email address of every employee in any format.</h4>
           {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
           </br>
@@ -109,10 +108,7 @@
                   <label class="mdl-textfield__label" for="email">Email</label>
               </div>
             </br>
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <input class="mdl-textfield__input" type="text" value="N/A" name="phone_number" required>
-                  <label class="mdl-textfield__label" for="phone_number">Phone Number</label>
-              </div>
+                  <input class="mdl-textfield__input" type="hidden" value="N/A" name="phone_number" required>
 
               <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-2">
               <input type="checkbox" id="checkbox-2" class="mdl-checkbox__input" onclick="enable()">

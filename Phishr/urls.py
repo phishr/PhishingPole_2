@@ -6,10 +6,11 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login, name='login'),
     path('logout/',views.logout, name='logout'),
-    path('BetaSignup/',views.register, name='register'),
+    path('Signup/',views.register, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/UpdateAccount/', views.UpdateAccount, name='UpdateAccount'),
-    path('dashboard/UpdateAccount/ChangePassword', views.ChangePassword, name='ChangePassword'),
+    path('dashboard/UpdateAccount/ChangePassword/', views.ChangePassword, name='ChangePassword'),
+    path('dashboard/UpdateAccount/Cancel/', views.Cancel, name='Cancel'),
     #DONT FORGET TO MAKE SURE THAT ALL OF THE LINKS IN THE DASHBOARD WORK
     path('PHISHED/',views.PHISHED,name='PHISHED'),
     path('PHISHED/<employee_id>/',views.PHISHED,name='PHISHED'),
@@ -23,6 +24,9 @@ urlpatterns = [
     path('dashboard/campaigns/', views.ViewCampaigns,name='ViewCampaigns'),
     path('dashboard/campaigns/<campaign_name>/', views.ViewCampaigns,name='ViewCampaigns'),
     path('CampaignManager/',views.CampaignManager,name="CampaignManager"),
+    path('ForgotPassword/',views.ForgotPassword,name="ForgotPassword"),
+    path('billing/',views.billing,name="billing"),
+    path('billing/<confirm_code>/',views.billing,name="billing"),
     #path('CampaignManager/download/<path>/',views.download,name="download"),
 
     #path('deleteme/',views.DELETEME,name='deleteme')

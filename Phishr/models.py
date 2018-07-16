@@ -2,6 +2,17 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+#create recovery code upon creation of new user
+#create new recovery code after password change
+#use email provided to find user
+class passwordrecovery(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	reset_code = models.CharField(max_length=6)
+
+class company(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    company_name = models.CharField(default="NOT-SET",max_length=100)
+
 class target(models.Model):
 	'''
     example_target = target(name="John Doe",email="johndoe@example.com",phone_number="N/A",company_id="ExampleInc",company_name="Example Inc",TEMP_CAMPAIGN_RECORDS="2001-05-16")
@@ -14,9 +25,9 @@ class target(models.Model):
 	join_date = models.DateField()
 
 class phishr_user(models.Model):
+	paid = models.BooleanField(default=False)
 	username = models.CharField(max_length=200)
 	company_id = models.CharField(max_length=100)
-	trial_user = models.BooleanField(default=False)
 
 
 class campaign_directory(models.Model):
@@ -49,104 +60,3 @@ class trial_campaigm_directory:
 ### PHISHING CAMPAIGNS ###
 
 #new campaigns have to end in the number they are
-
-class operation_test_1(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-	
-
-
-class operation_test_2(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-
-
-class operation_test_3(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-class operation_test_4(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-class operation_test_5(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-class operation_test_6(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-class new_campaign(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-class companyco_trial_campaign(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
-
-class YEET_PAIGN(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-    				
-
-class CAMPOON(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-    				
-
-class Test_Icles(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-    				
-
-class NEW_SHIT_NIGGA(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-    				
-
-class KIKE_ME(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-    				
-
-class FUCKME(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-    				
-
-class OPERATION_EAT_ASS(models.Model):
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')

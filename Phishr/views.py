@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from Phishr.models import target, phishr_user
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth import logout as django_logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth.models import User
@@ -12,7 +12,12 @@ from Phishr.models import target
 from Phishr.models import phishr_user
 from Phishr.models import campaign_results
 from Phishr.models import campaign_directory
+from Phishr.models import company
+from Phishr.models import passwordrecovery
 import hashlib
+import random
+import string
+import requests
 import os
 import pickle
 from django.apps import apps
@@ -33,6 +38,10 @@ for C in campaign_directory.objects.all():
 #def target_isnt_too_young(target):
 	#check if a target has existed for long enough to have been sent a phishing email
 
+
+def check_if_paid_user(user):
+	return phishr_user.objects.get(username=user.username).paid
+
 def get_email(name,CID):
 	try:
 		return target.objects.filter(name=name,company_id=CID)[0].email
@@ -52,7 +61,7 @@ def user_has_trial_targets(user):
 '''
 
 def is_trial_user(user):
-	return phishr_user.objects.filter(username=user.username,company_id=get_company_id(user.username))[0].trial_user
+	return False
 
 def campaigns_witnessed(user):
 	a = []
@@ -160,12 +169,15 @@ def get_company_id(username):
 	else:
 		return phishr_user.objects.filter(username=username)[0].company_id
 
-def get_company_name(username):
-	if username == '':
+def get_company_name(user):
+	if user == None:
 		return 'N/A'
-	else:
-		random_target = target.objects.filter(company_id=get_company_id(username))[0]
-		return random_target.company_name
+	#try:
+	return_value = user.company.company_name
+	return return_value
+	#except:
+		#a = target.objects.filter(company_id=get_company_id(user.username))[0]
+		#return a.company_name
 
 def reformat_name(name):
 	test = 0
@@ -306,7 +318,10 @@ def home(request):
 
 @login_required(login_url='/login/')
 def dashboard(request):
-
+	
+	if check_if_paid_user(request.user) ==  False:
+		return HttpResponseRedirect('/billing/')
+	
 	if request.user.username == 'admin':
 			return HttpResponseRedirect('/admin_dashboard/')
 
@@ -385,6 +400,9 @@ def dashboard(request):
 	
 @login_required(login_url='/login/')
 def dashboard_individuals(request, target_name=''):
+
+	if check_if_paid_user(request.user) ==  False:
+		return HttpResponseRedirect('/billing/')
 
 	if request.user.username == 'admin':
 			return HttpResponseRedirect('/admin_dashboard/')
@@ -511,16 +529,33 @@ def register(request):
 						new_Puser.save()
 
 
-						user = User.objects.create_user(username=username,
+						new_user = User.objects.create_user(username=username,
 	                                 email=email,
 	                                 password=password,
 	                                 first_name=first_name,
 	                                 last_name=last_name,)
 
-						return HttpResponseRedirect('/login/')
+						user = authenticate(request, username=username, password=password)
+						
+						NEW_RESET_CODE = passwordrecovery(user=user,reset_code=''.join(random.choices(string.ascii_uppercase + string.digits, k=6)))
+
+						NEW_RESET_CODE.save()
+
+						NEW_COMPANY = company(user=user,company_name=company_name)
+
+						NEW_COMPANY.save()
+
+						if user is not None:
+							django_login(request,user)
+							return HttpResponseRedirect('/billing/')
+						else:
+							return render(request, 'phishr/register.html',{
+							'error_message': 'An unexpected error occured. If this continues please contact customer support.',
+							})
+
 					else:
 						return render(request, 'phishr/register.html',{
-							'error_message': 'passwords do not match',
+							'error_message': 'Passwords do not match.',
 							})
 		
 		else:
@@ -546,7 +581,14 @@ def login(request):
 		if 'username' and 'password' in request.POST: #['username'] and request.POST['password'] in request.POST:
 			username = request.POST['username']
 			password = request.POST['password']
-			user = authenticate(request, username=username, password=password)
+
+			a = User.objects.filter(email=username)
+
+			if len(a) > 0:
+				u = a[0]
+				user = authenticate(request, username=u.username, password=password)
+			else: 
+				user = authenticate(request, username=username, password=password)
 
 			if user is not None:
 				django_login(request, user)
@@ -564,6 +606,9 @@ def login(request):
 @login_required(login_url='/login/')
 def UpdateAccount(request):
 
+	if check_if_paid_user(request.user) ==  False:
+		return HttpResponseRedirect('/billing/')
+
 	if request.user.username == 'admin':
 			return HttpResponseRedirect('/admin_dashboard/')
 
@@ -577,58 +622,58 @@ def UpdateAccount(request):
 
 		else:
 
-			if user_has_targets(request.user):
+			if 'new_username' and 'new_company_name' and 'new_email' and 'new_first_name' and 'new_last_name' in request.POST:
 
-				if 'new_username' and 'new_company_name' and 'new_email' and 'new_first_name' and 'new_last_name' in request.POST:
+				new_username = request.POST['new_username']
+				new_company_name = request.POST['new_company_name']
+				new_email = request.POST['new_email']
+				new_first_name = request.POST['new_first_name']
+				new_last_name = request.POST['new_last_name']
 
-					new_username = request.POST['new_username']
-					new_company_name = request.POST['new_company_name']
-					new_email = request.POST['new_email']
-					new_first_name = request.POST['new_first_name']
-					new_last_name = request.POST['new_last_name']
-
-					old_username = request.user.username
-					old_company_id = get_company_id(request.user.username)
-					old_company_name = get_company_name(request.user.username)
+				old_username = request.user.username
+				old_company_id = get_company_id(request.user.username)
+				old_company_name = get_company_name(request.user)
 
 					#update phishing campaigns
-					for i in range(len(campaign_directory.objects.all())):
-						CAMPAIGN = campaign_results.objects.filter(company_id=old_company_id)
-						for c in CAMPAIGN:
-							if c.company_id == old_company_id:
-								c.company_id = CNAME_TO_CID(new_company_name)
-								c.save()
-							else:
-								pass
+				for i in range(len(campaign_directory.objects.all())):
+					CAMPAIGN = campaign_results.objects.filter(company_id=old_company_id)
+					for c in CAMPAIGN:
+						if c.company_id == old_company_id:
+							c.company_id = CNAME_TO_CID(new_company_name)
+							c.save()
+						else:
+							pass
 						
 					#update targets works!
-					for t in target.objects.all():
-						T = target.objects.get(name=t.name,company_id=t.company_id)
-						T.company_name = new_company_name
-						T.company_id = CNAME_TO_CID(new_company_name)
-						T.save()
+				for t in target.objects.all():
+					T = target.objects.get(name=t.name,company_id=t.company_id)
+					T.company_name = new_company_name
+					T.company_id = CNAME_TO_CID(new_company_name)
+					T.save()
 
 					#update users and phishr_users
-					User.objects.filter(username=request.user.username).update(username=new_username,email=new_email,first_name=new_first_name,last_name=new_last_name)
-					phishr_user.objects.filter(username=request.user.username,company_id=get_company_id(request.user.username)).update(username=new_username,company_id=CNAME_TO_CID(new_company_name))
+				company.objects.filter(user=request.user).update(company_name=new_company_name)
+				User.objects.filter(username=request.user.username).update(username=new_username,email=new_email,first_name=new_first_name,last_name=new_last_name)
+				phishr_user.objects.filter(username=request.user.username,company_id=get_company_id(request.user.username)).update(username=new_username,company_id=CNAME_TO_CID(new_company_name))
 
-					return render(request, 'phishr/Edit_account_info_pretty.html', {
-						'error_message': 'account info updated successfully',
-						'user': request.user,
-						'request': request,
-						})
+				return render(request, 'phishr/Edit_account_info_pretty.html', {
+					'error_message': 'account info updated successfully',
+					'user': request.user,
+					'request': request,
+					})
 
-				else:
-					return render(request, 'phishr/Edit_account_info_pretty.html',{
-						'user': request.user,
-						'company_name': get_company_name(request.user.username),
-						'request': request,
-						})
 			else:
-				return render(request, 'phishr/dashboard/NO_TARGETS.html')
+				return render(request, 'phishr/Edit_account_info_pretty.html',{
+					'user': request.user,
+					'company_name': get_company_name(request.user),
+					'request': request,
+					})
 
 @login_required(login_url='/login/')
 def ViewCampaigns(request, campaign_name=''):
+
+	if check_if_paid_user(request.user) ==  False:
+		return HttpResponseRedirect('/billing/')
 
 	if request.user.username == 'admin':
 			return HttpResponseRedirect('/admin_dashboard/')
@@ -711,10 +756,31 @@ def ViewCampaigns(request, campaign_name=''):
 			else:
 				return render(request, 'phishr/dashboard/NO_TARGETS.html')
 
+@login_required(login_url='/login/')
+def Cancel(request):
+	if 'confirmation' in request.POST:
+		if request.POST['confirmation'] == "true":
+			r = requests.post("https://psh-email-server.000webhostapp.com/mail.php", data={'to':'support@phishr.io','from':'eliasbothell22@gmail.com','subject':'Phishr Cancelation','message':'The phishr membership of the user: ' + request.user.username + " The reason was: "+request.POST['reason']})
+			if r.text != 'message sent':
+				return render(request, 'phishr/Cancel.html',{
+					'error_message': 'An unexpected error occured, please try again later.'
+					})
+			else:
+				return render(request, 'phishr/Cancel.html',{
+					'confirmed': True
+					})
+	else:
+		#ask for confirmation
+		return render(request, 'phishr/Cancel.html',{
+			'confirmed': False
+			})
 
 @login_required(login_url='/login/')
 def AddEmployees(request):
 	
+	if check_if_paid_user(request.user) ==  False:
+		return HttpResponseRedirect('/billing/')
+
 	if request.user.username == 'admin':
 		return HttpResponseRedirect('/admin_dashboard/')
 
@@ -763,6 +829,10 @@ def AddEmployees(request):
 
 @login_required(login_url='/login/')
 def RemoveEmployees(request,employee_name=''):
+
+	if check_if_paid_user(request.user) ==  False:
+		return HttpResponseRedirect('/billing/')
+
 	if request.user.username == 'admin':
 			return HttpResponseRedirect('/admin_dashboard/')
 
@@ -850,14 +920,6 @@ def download(request, path=None):
 	
 	else:
 		return HttpResponseRedirect('dashboard')
-
-
-class new_model():
-	name = models.CharField(max_length=75)
-	company_id = models.CharField(max_length=100)
-	clicked_link = models.BooleanField(default=False)
-	employee_id = models.CharField(max_length=64,default='DEFAULT')
-
 
 @login_required(login_url='/login/')
 def CampaignManager(request):
@@ -958,7 +1020,7 @@ def ChangePassword(request,userid=''):
 				if 'new_password' and 'new_password_confirmation' in request.POST:
 
 					if request.POST['new_password'] == request.POST['new_password_confirmation']:
-						u = User.objects.get(username__exact=request.user.username)
+						u = User.objects.get(username=request.user.username)
 						u.set_password(request.POST['new_password'])
 						u.save()
 
@@ -975,9 +1037,10 @@ def ChangePassword(request,userid=''):
 							})
 
 				else:
+					print('no post params: '+str(request.POST))
 					return render(request, 'phishr/ChangePassword.html',{
 						'user': request.user,
-						'company_name': get_company_name(request.user.username),
+						'company_name': get_company_name(request.user),
 						'request': request,
 						})
 			else:
@@ -1001,32 +1064,99 @@ def PHISHED(request,employee_id=''):
 				pass
 		return Http404()
 	else:
-		HttpResponseRedirect("/")
+		return HttpResponseRedirect("/")
 
 #some code for making test database entries and editing things when I fuck up
 
 
 def DELETEME(request):
-	for campaign in campaign_directory.objects.all():
-		exec('c = '+campaign.campaign_name+'.objects.all()')
-		for t in locals()['c']:
-			a = campaign_results()
-			a.name = t.name
-			a.campaign_name = campaign.campaign_name
-			a.company_id = t.company_id
-			a.clicked_link = t.clicked_link
-			a.employee_id = create_employee_id(t.name,t.company_id,campaign.campaign_name)
-			a.save()
+	for u in phishr_user.objects.all():
+		u.paid = True
+		u.save()
 
 
 	return HttpResponse("done")
 
+@login_required
+def billing(request,confirm_code=''):
+
+	if check_if_paid_user(request.user) ==  True:
+		return HttpResponseRedirect('/dashboard/')
+
+	if confirm_code == '':
+		#return standard billing
+		return render(request, 'phishr/billing.html')
 
 
-def beta_signup(request):
-	return HttpResponse('beta_signup')
+	if confirm_code == 'KJASHFFOHASFKNASFLALFJSLKAFJMAFLKJMAFLK':
+			
+			u = phishr_user.objects.get(username=request.user.username)
+			u.paid = True
+			u.save()
+
+			return HttpResponseRedirect("/dashboard/")
+
+	#check if user has paid
+	#check if user is logged in
+	return render(request, 'phishr/billing.html')
 
 
+
+#NEEDS WORK!!! and don't forget to change the username login to also work with email_present
+def ForgotPassword(request):
+	if request.user.is_authenticated:
+		print('logout')
+		django_logout(request)
+		return render(request, 'phishr/forgot_password.html',{
+			'CodeSent': False
+			})
+
+	if 'reset-email' in request.POST:
+		print('email in post')
+		a = User.objects.filter(email=request.POST['reset-email'])
+		if len(a) > 0:
+			recovery_code = a[0].passwordrecovery.reset_code
+			r = requests.post("https://psh-email-server.000webhostapp.com/mail.php", data={'to':request.POST['reset-email'],'from':'support@phishr.io','subject':'Phishr Password Reset','message':str('Your recovery code is '+ recovery_code)})
+			if r.text != 'message sent':
+				return render(request, 'phishr/forgot_password.html',{
+					'error_message': 'An unexpected error occured, please try again later.'
+					})
+			return render(request, 'phishr/forgot_password.html',{
+				'CodeSent': True
+			})#render reset password page
+
+
+		else:
+			return render(request, 'phishr/forgot_password.html',{
+				'CodeSent': False,
+				'error_message': 'Email provided does not match our records.'
+			}) #error message
+			
+
+	if 'recovery-code' and 'new-password' and 'new-password-confirmation' in request.POST:
+		for u in User.objects.all():
+			if u.passwordrecovery.reset_code == request.POST['recovery-code']:
+				if request.POST['new-password'] == request.POST['new-password-confirmation']:
+					u.set_password(request.POST['new-password'])
+					u.save()	
+					return HttpResponseRedirect('/login/')
+				else:
+					return render(request, 'phishr/forgot_password.html',{
+						'CodeSent': True,
+						'error_message': 'Passwords do not match.'
+						})
+
+
+		return render(request, 'phishr/forgot_password.html',{
+			'CodeSent': True,
+			'error_message': 'Reset Code Incorrect.'
+			})
+
+
+	else:	
+		return render(request, 'phishr/forgot_password.html',{
+			'CodeSent': False
+			})
 
 '''
 def contact(request): #here I'll put contact info
